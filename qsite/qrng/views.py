@@ -108,7 +108,11 @@ def sample_bits(bits, selection):
 
 def quantum_key_distribution(response):
     np.random.seed(seed = 0)
-    n = response
+    if response > 2:
+         n = response
+    else:
+        n = response + 5
+        
     user_bits = randint(2, size = n)
     user_bases = randint(2, size = n)
     output_bases = randint(2, size = n) # for the output from the box
