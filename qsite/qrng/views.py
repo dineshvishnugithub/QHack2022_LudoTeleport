@@ -8,7 +8,7 @@ from qiskit.tools.monitor import job_monitor
 import numpy as np
 from numpy.random import randint
 
-IBMQ.enable_account('ENTER API KEY HERE')
+IBMQ.enable_account('ENTER YOUR API TOKEN HERE')
 provider = IBMQ.get_provider(hub='ibm-q')
 
 def home(request):
@@ -122,5 +122,45 @@ def quantum_key_distribution(response):
     user_sample = sample_bits(user_key, bit_selection)
     ans = user_sample[0] * 10 + user_sample[1]
     return ans
+
+def create_bell_pair(qc, a, b):
+    qc.h(a)
+    qc.cx(a, b)
+    
+def message_encoding_superdense_coding(qc, qubit, msg):
+    if msg == "00":
+        pass
+    if msg == "01":
+        qc.x(qubit)
+    if msg == "10":
+        qc.z(qubit)
+    if msg == "11":
+        qc.z(qubit)
+        qc.x(qubit)
+    else:
+        print("Invalid message :/")
+        
+def decode_message(qc, a, b):
+    qc.cx(a,b)
+    qc.h(a)
+
+def superdense_coding(ans):
+    qc = QuantumCircuit(2)
+    create_bell_pair(qc, 0, 1)
+    qc.barrier()
+    msg = str(ans)
+    message_encoding_superdense_coding(qc, 0, msg)
+    qc.barrier()
+    decode_message(qc, 0, 1)
+    qc.measure_all()
+    sim = Aer.get_backend('aer_simulator')
+    ans = execute(qc, sim).result().get_counts()
+    key = list(ans.keys())[0]
+    output_string = str(key)
+    if output_string != "00":
+    print("Success!")
+    else:
+    print("You lose!")
+    
     
     
